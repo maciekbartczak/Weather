@@ -4,31 +4,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String CITY_NAME = "Lodz";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadFragment(new BasicWeatherFragment());
+        ViewPager2Adapter viewPagerAdapter = new ViewPager2Adapter(this);
+        ViewPager2 viewPager = findViewById(R.id.fragmentContainer);
 
-        Button basicWeatherButton = findViewById(R.id.BasicButton);
-        Button advancedWeatherButton = findViewById(R.id.AdvancedButton);
-        Button forecastWeatherButton = findViewById(R.id.ForecastButton);
+        viewPager.setAdapter(viewPagerAdapter);
 
-        basicWeatherButton.setOnClickListener(v -> loadFragment(new BasicWeatherFragment()));
-        advancedWeatherButton.setOnClickListener(v -> loadFragment(new AdvancedWeatherFragment()));
-    }
-
-    private void loadFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragmentContainer, fragment, null);
-        transaction.commit();
     }
 }
