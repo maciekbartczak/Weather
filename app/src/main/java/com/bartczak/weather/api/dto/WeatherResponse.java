@@ -1,5 +1,7 @@
 package com.bartczak.weather.api.dto;
 
+import com.bartczak.weather.api.WeatherApi;
+
 public class WeatherResponse {
     private final Coord coord;
     private final WeatherDescription[] weather;
@@ -15,7 +17,9 @@ public class WeatherResponse {
     private final String name;
     private final int cod;
 
-    public WeatherResponse(Coord coord, WeatherDescription[] weather, String base, DetailedWeatherDescription main, String visibility, Wind wind, Clouds clouds, long dt, Sys sys, String timezone, long id, String name, int cod) {
+    private WeatherApi.Unit unit;
+
+    public WeatherResponse(Coord coord, WeatherDescription[] weather, String base, DetailedWeatherDescription main, String visibility, Wind wind, Clouds clouds, long dt, Sys sys, String timezone, long id, String name, int cod, WeatherApi.Unit unit) {
         this.coord = coord;
         this.weather = weather;
         this.base = base;
@@ -29,6 +33,7 @@ public class WeatherResponse {
         this.id = id;
         this.name = name;
         this.cod = cod;
+        this.unit = unit;
     }
 
     public Coord getCoord() {
@@ -81,5 +86,13 @@ public class WeatherResponse {
 
     public int getCod() {
         return cod;
+    }
+
+    public WeatherApi.Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(WeatherApi.Unit units) {
+        this.unit = units;
     }
 }

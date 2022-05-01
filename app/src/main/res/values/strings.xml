@@ -5,4 +5,10 @@
     <string name="basic_label">Basic</string>
     <string name="advanced_label">Advanced</string>
     <string name="forecast_label">Forecast</string>
+    <string name="temp_label">Temperature</string>
+    <string name="pressure_label">Pressure</string>
+    <string name="humidity_label">Humidity</string>
+    <string name="wind_speed_label">Wind speed</string>
+    <string name="wind_direction_label">Wind direction</string>
+    <string name="visibility_label">Visibility</string>
 </resources>

@@ -11,7 +11,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class ViewPager2Adapter extends FragmentStateAdapter {
 
-    private static final int ITEM_COUNT = 2;
+    private static final int ITEM_COUNT = 3;
 
     public ViewPager2Adapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
@@ -25,6 +25,8 @@ public class ViewPager2Adapter extends FragmentStateAdapter {
                 return new BasicWeatherFragment();
             case 1:
                 return new AdvancedWeatherFragment();
+            case 2:
+                return new ForecastFragment();
             default:
                 throw new IllegalArgumentException("Invalid fragment position " + position);
         }
