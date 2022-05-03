@@ -10,6 +10,7 @@
         <entry key="app/src/main/res/layout/fragment_advanced_weather.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_basic_weather.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/fragment_forecast.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.33" />
       </map>
     </option>
   </component>
