@@ -43,34 +43,23 @@ public class SettingsFragment extends Fragment {
             imperialRadio.setChecked(true);
         }
 
-        unitGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                activity.getSharedPreferences("settings", 0)
-                        .edit()
-                        .putString("unit", checkedId == R.id.metric_button ? "metric" : "imperial")
-                        .apply();
-                activity.fetchWeather();
-            }
+        unitGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            activity.getSharedPreferences("settings", 0)
+                    .edit()
+                    .putString("unit", checkedId == R.id.metric_button ? "metric" : "imperial")
+                    .apply();
+            activity.fetchWeather();
         });
 
-        cityInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                activity.getSharedPreferences("settings", 0)
-                        .edit()
-                        .putString("city", cityInput.getText().toString())
-                        .apply();
-                activity.fetchWeather();
-            }
+        cityInput.setOnFocusChangeListener((view, b) -> {
+            activity.getSharedPreferences("settings", 0)
+                    .edit()
+                    .putString("city", cityInput.getText().toString())
+                    .apply();
+            activity.fetchWeather();
         });
 
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.fetchWeather();
-            }
-        });
+        refreshButton.setOnClickListener(v -> activity.fetchWeather());
 
         return root;
     }
