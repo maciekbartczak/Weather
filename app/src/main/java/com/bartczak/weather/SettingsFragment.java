@@ -25,6 +25,11 @@ public class SettingsFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity == null) {
+            return root;
+        }
+
         EditText cityInput = root.findViewById(R.id.city_input);
         RadioGroup unitGroup = root.findViewById(R.id.unit_group);
         RadioButton metricRadio = root.findViewById(R.id.metric_button);
@@ -41,7 +46,7 @@ public class SettingsFragment extends Fragment {
         unitGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                getActivity().getSharedPreferences("settings", 0)
+                activity.getSharedPreferences("settings", 0)
                         .edit()
                         .putString("unit", checkedId == R.id.metric_button ? "metric" : "imperial")
                         .apply();
@@ -56,7 +61,7 @@ public class SettingsFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                getActivity().getSharedPreferences("settings", 0)
+                activity.getSharedPreferences("settings", 0)
                         .edit()
                         .putString("city", charSequence.toString())
                         .apply();
@@ -71,7 +76,7 @@ public class SettingsFragment extends Fragment {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).fetchWeather();
+                activity.fetchWeather();
             }
         });
 

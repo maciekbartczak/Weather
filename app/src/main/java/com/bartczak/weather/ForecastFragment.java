@@ -29,8 +29,11 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_forecast, container, false);
         MainActivity activity = (MainActivity) getActivity();
-        this.weatherViewModel = new ViewModelProvider(activity).get(WeatherViewModel.class);
+        if (activity == null) {
+            return root;
+        }
 
+        this.weatherViewModel = new ViewModelProvider(activity).get(WeatherViewModel.class);
 
         populateForecast(root);
 

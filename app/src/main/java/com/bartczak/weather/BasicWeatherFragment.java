@@ -37,8 +37,13 @@ public class BasicWeatherFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        MainActivity activity = (MainActivity) getActivity();
         View root = inflater.inflate(R.layout.fragment_basic_weather, container, false);
+
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity == null) {
+            return root;
+        }
+
         this.weatherViewModel = new ViewModelProvider(activity).get(WeatherViewModel.class);
 
         setTextViews(root);
