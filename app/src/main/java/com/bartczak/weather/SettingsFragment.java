@@ -50,26 +50,18 @@ public class SettingsFragment extends Fragment {
                         .edit()
                         .putString("unit", checkedId == R.id.metric_button ? "metric" : "imperial")
                         .apply();
+                activity.fetchWeather();
             }
         });
 
-        cityInput.addTextChangedListener(new TextWatcher() {
+        cityInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onFocusChange(View view, boolean b) {
                 activity.getSharedPreferences("settings", 0)
                         .edit()
-                        .putString("city", charSequence.toString())
+                        .putString("city", cityInput.getText().toString())
                         .apply();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+                activity.fetchWeather();
             }
         });
 
