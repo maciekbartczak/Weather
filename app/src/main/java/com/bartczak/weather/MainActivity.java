@@ -17,12 +17,32 @@ import com.bartczak.weather.api.WeatherViewModel;
 import com.bartczak.weather.api.dto.WeatherForecastResponse;
 import com.bartczak.weather.api.dto.WeatherResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+import java.lang.reflect.Type;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 public class MainActivity extends AppCompatActivity {
 
     private WeatherViewModel weatherViewModel;
     private RequestQueue queue;
-    private final Gson gson = new Gson();
+    private final Gson gson = new Gson().newBuilder()
+            .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>) (json, typeOfT, context) -> {
+                Instant instant = Instant.ofEpochMilli(json.getAsJsonPrimitive().getAsLong());
+                return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            })
+            .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context) ->
+                    new JsonPrimitive(src.toInstant(ZoneId.systemDefault().getRules().getOffset(src)).toEpochMilli()))
+            .create();
 
 
     @Override
@@ -35,9 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
         String city = this.getSharedPreferences("weather", 0).getString("city", "");
 
-        loadSavedWeather();
-        fetchWeather();
-        createAdapter(city.equals(""));
+        boolean needsRefresh = loadSavedWeather();
+        if (needsRefresh) {
+            fetchWeather();
+        }
+        createAdapter(!city.equals(""));
     }
 
     private void createAdapter(boolean citySet) {
@@ -62,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
                     (Request.Method.GET, WeatherApi.getWeatherUrl(city, units), null, response -> {
                         WeatherResponse weather = gson.fromJson(response.toString(), WeatherResponse.class);
                         weather.setUnit(units);
+                        weather.setFetchedAt(LocalDateTime.now());
 
                         String weatherJson = gson.toJson(weather);
                         this.weatherViewModel.setWeather(weather);
@@ -72,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     (Request.Method.GET, WeatherApi.getForecastUrl(city, units, 16), null, response -> {
                         WeatherForecastResponse forecast = gson.fromJson(response.toString(), WeatherForecastResponse.class);
                         forecast.setUnit(units);
+                        forecast.setFetchedAt(LocalDateTime.now());
 
                         String forecastJson = gson.toJson(forecast);
                         this.weatherViewModel.setWeatherForecast(forecast);
@@ -99,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void loadSavedWeather() {
+    private boolean loadSavedWeather() {
         WeatherResponse weather = gson.fromJson(this.getSharedPreferences("weather", 0).getString("weather", ""), WeatherResponse.class);
         WeatherForecastResponse forecast = gson.fromJson(this.getSharedPreferences("weather", 0).getString("forecast", ""), WeatherForecastResponse.class);
         if (weather != null) {
@@ -108,6 +132,11 @@ public class MainActivity extends AppCompatActivity {
         if (forecast != null) {
             this.weatherViewModel.setWeatherForecast(forecast);
         }
+        if (weather == null || forecast == null
+                || weather.getFetchedAt() == null || forecast.getFetchedAt() == null) {
+            return true;
+        }
+        return weather.getFetchedAt().isBefore(LocalDateTime.now().minusMinutes(15)) || forecast.getFetchedAt().isBefore(LocalDateTime.now().minusMinutes(15));
     }
 }
 

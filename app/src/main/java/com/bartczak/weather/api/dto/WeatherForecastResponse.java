@@ -2,6 +2,7 @@ package com.bartczak.weather.api.dto;
 
 import com.bartczak.weather.api.WeatherApi;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class WeatherForecastResponse {
@@ -9,6 +10,7 @@ public class WeatherForecastResponse {
     private final String message;
     private final int cnt;
     private final List<WeatherForecast> list;
+    private LocalDateTime fetchedAt;
 
     private WeatherApi.Unit unit;
 
@@ -42,4 +44,14 @@ public class WeatherForecastResponse {
     public void setUnit(WeatherApi.Unit unit) {
         this.unit = unit;
     }
+
+    public void setFetchedAt(LocalDateTime fetchedAt) {
+        this.fetchedAt = fetchedAt;
+    }
+
+
+    public LocalDateTime getFetchedAt() {
+        return fetchedAt;
+    }
+
 }
