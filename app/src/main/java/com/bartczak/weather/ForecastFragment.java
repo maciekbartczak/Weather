@@ -42,7 +42,10 @@ public class ForecastFragment extends Fragment {
 
     private void populateForecast(View view) {
         LinearLayout forecastLayout = (LinearLayout) view.findViewById(R.id.row_holder);
+
         this.weatherViewModel.getWeatherForecast().observe(getViewLifecycleOwner(), forecast -> {
+            forecastLayout.removeAllViewsInLayout();
+
             String tempUnit = forecast.getUnit() == WeatherApi.Unit.METRIC ? "°C" : "°F";
 
             for (int i = 0; i < forecast.getList().size(); i++) {
