@@ -33,17 +33,23 @@ public class MainActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
         this.weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
 
+        String city = this.getSharedPreferences("weather", 0).getString("city", "");
+
         loadSavedWeather();
         fetchWeather();
-        createAdapter();
+        createAdapter(city.equals(""));
     }
 
-    private void createAdapter() {
+    private void createAdapter(boolean citySet) {
         ViewPager2Adapter viewPagerAdapter = new ViewPager2Adapter(this);
         ViewPager2 viewPager = findViewById(R.id.fragmentContainer);
 
         viewPager.setAdapter(viewPagerAdapter);
-        viewPager.setCurrentItem(1);
+        if (!citySet) {
+            viewPager.setCurrentItem(0);
+        } else {
+            viewPager.setCurrentItem(1);
+        }
     }
 
     public void fetchWeather() {
@@ -51,30 +57,32 @@ public class MainActivity extends AppCompatActivity {
                 .equals("metric") ? WeatherApi.Unit.METRIC : WeatherApi.Unit.IMPERIAL;
         String city = this.getSharedPreferences("settings", 0).getString("city", "");
 
-        JsonObjectRequest currentWeatherRequest = new JsonObjectRequest
-                (Request.Method.GET, WeatherApi.getWeatherUrl(city, units), null, response -> {
-                    WeatherResponse weather = gson.fromJson(response.toString(), WeatherResponse.class);
-                    weather.setUnit(units);
+        if (!city.equals("")) {
+            JsonObjectRequest currentWeatherRequest = new JsonObjectRequest
+                    (Request.Method.GET, WeatherApi.getWeatherUrl(city, units), null, response -> {
+                        WeatherResponse weather = gson.fromJson(response.toString(), WeatherResponse.class);
+                        weather.setUnit(units);
 
-                    String weatherJson = gson.toJson(weather);
-                    this.weatherViewModel.setWeather(weather);
-                    this.getSharedPreferences("weather", 0).edit().putString("weather", weatherJson).apply();
-                }, this::makeErrorToast);
+                        String weatherJson = gson.toJson(weather);
+                        this.weatherViewModel.setWeather(weather);
+                        this.getSharedPreferences("weather", 0).edit().putString("weather", weatherJson).apply();
+                    }, this::makeErrorToast);
 
-        JsonObjectRequest weatherForecastRequest = new JsonObjectRequest
-                (Request.Method.GET, WeatherApi.getForecastUrl(city, units, 16), null, response -> {
-                    WeatherForecastResponse forecast = gson.fromJson(response.toString(), WeatherForecastResponse.class);
-                    forecast.setUnit(units);
+            JsonObjectRequest weatherForecastRequest = new JsonObjectRequest
+                    (Request.Method.GET, WeatherApi.getForecastUrl(city, units, 16), null, response -> {
+                        WeatherForecastResponse forecast = gson.fromJson(response.toString(), WeatherForecastResponse.class);
+                        forecast.setUnit(units);
 
-                    String forecastJson = gson.toJson(forecast);
-                    this.weatherViewModel.setWeatherForecast(forecast);
-                    this.getSharedPreferences("weather", 0).edit().putString("forecast", forecastJson).apply();
-                }, error -> {
+                        String forecastJson = gson.toJson(forecast);
+                        this.weatherViewModel.setWeatherForecast(forecast);
+                        this.getSharedPreferences("weather", 0).edit().putString("forecast", forecastJson).apply();
+                    }, error -> {
 
-                });
+                    });
 
-        this.queue.add(currentWeatherRequest);
-        this.queue.add(weatherForecastRequest);
+            this.queue.add(currentWeatherRequest);
+            this.queue.add(weatherForecastRequest);
+        }
     }
 
     private void makeErrorToast(VolleyError error) {

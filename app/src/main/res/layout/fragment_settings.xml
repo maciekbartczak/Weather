@@ -18,7 +18,8 @@
             android:text="@string/refresh_label"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="@dimen/text_size"/>
 
         <EditText
             android:id="@+id/city_input"
@@ -29,6 +30,7 @@
             android:inputType="textPersonName"
             android:minHeight="48dp"
             android:text="@string/city_label"
+            android:textSize="@dimen/text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -46,13 +48,15 @@
                 android:id="@+id/metric_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/metric_label" />
+                android:text="@string/metric_label"
+                android:textSize="@dimen/text_size"/>
 
             <RadioButton
                 android:id="@+id/imperial_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/imperial_label" />
+                android:text="@string/imperial_label"
+                android:textSize="@dimen/text_size"/>
         </RadioGroup>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

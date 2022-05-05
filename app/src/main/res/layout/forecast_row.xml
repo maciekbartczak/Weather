@@ -10,14 +10,14 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_size"
         app:layout_constraintStart_toStartOf="parent"></TextView>
 
     <TextView
         android:id="@+id/temperature"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_size"
         app:layout_constraintEnd_toEndOf="parent"></TextView>
 
     <TextView
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="4dp"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/date" />
