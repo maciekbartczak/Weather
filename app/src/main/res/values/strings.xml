@@ -16,4 +16,6 @@
     <string name="metric_label">Metric</string>
     <string name="imperial_label">Imperial</string>
     <string name="save_label">Save</string>
+    <string name="favorite_label">Favorite</string>
+    <string name="delete_label">Delete</string>
 </resources>
