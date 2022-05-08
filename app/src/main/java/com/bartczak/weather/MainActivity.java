@@ -1,5 +1,6 @@
 package com.bartczak.weather;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -24,14 +25,21 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
+
+    private HashMap<String, WeatherResponse> weatherMap = new HashMap<>();
+    private HashMap<String, WeatherForecastResponse> weatherForecastMap = new HashMap<>();
 
     private WeatherViewModel weatherViewModel;
     private RequestQueue queue;
@@ -55,10 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
         String city = this.getSharedPreferences("weather", 0).getString("city", "");
 
-        boolean needsRefresh = loadSavedWeather();
-        if (needsRefresh) {
-            fetchWeather();
-        }
+        loadSavedWeather();
+        fetchWeather();
         createAdapter(!city.equals(""));
     }
 
@@ -86,10 +92,21 @@ public class MainActivity extends AppCompatActivity {
                         weather.setUnit(units);
                         weather.setFetchedAt(LocalDateTime.now());
 
-                        String weatherJson = gson.toJson(weather);
+                        this.weatherMap.put(city, weather);
+
+                        Set<String> favorites = this.getSharedPreferences("favorites", 0).getStringSet("cities", new HashSet<>());
+                        if (favorites.contains(city)) {
+                            String weatherJson = gson.toJson(this.weatherMap);
+                            this.getSharedPreferences("weather", 0).edit().putString("weather", weatherJson).apply();
+                        }
+
                         this.weatherViewModel.setWeather(weather);
-                        this.getSharedPreferences("weather", 0).edit().putString("weather", weatherJson).apply();
-                    }, this::makeErrorToast);
+                    }, error -> {
+                       this.makeErrorToast(error);
+                       if (this.weatherMap.containsKey(city)) {
+                           this.weatherViewModel.setWeather(this.weatherMap.get(city));
+                       }
+                    });
 
             JsonObjectRequest weatherForecastRequest = new JsonObjectRequest
                     (Request.Method.GET, WeatherApi.getForecastUrl(city, units, 16), null, response -> {
@@ -97,11 +114,19 @@ public class MainActivity extends AppCompatActivity {
                         forecast.setUnit(units);
                         forecast.setFetchedAt(LocalDateTime.now());
 
-                        String forecastJson = gson.toJson(forecast);
-                        this.weatherViewModel.setWeatherForecast(forecast);
-                        this.getSharedPreferences("weather", 0).edit().putString("forecast", forecastJson).apply();
-                    }, error -> {
+                        this.weatherForecastMap.put(city, forecast);
 
+                        Set<String> favorites = this.getSharedPreferences("favorites", 0).getStringSet("cities", new HashSet<>());
+                        if (favorites.contains(city)) {
+                            String forecastJson = gson.toJson(this.weatherForecastMap);
+                            this.getSharedPreferences("weather", 0).edit().putString("forecast", forecastJson).apply();
+                        }
+
+                        this.weatherViewModel.setWeatherForecast(forecast);
+                    }, error -> {
+                        if (this.weatherForecastMap.containsKey(city)) {
+                            this.weatherViewModel.setWeatherForecast(this.weatherForecastMap.get(city));
+                        }
                     });
 
             this.queue.add(currentWeatherRequest);
@@ -123,20 +148,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean loadSavedWeather() {
-        WeatherResponse weather = gson.fromJson(this.getSharedPreferences("weather", 0).getString("weather", ""), WeatherResponse.class);
-        WeatherForecastResponse forecast = gson.fromJson(this.getSharedPreferences("weather", 0).getString("forecast", ""), WeatherForecastResponse.class);
-        if (weather != null) {
-            this.weatherViewModel.setWeather(weather);
+    private void loadSavedWeather() {
+        Type weatherType = new TypeToken<HashMap<String, WeatherResponse>>(){}.getType();
+        Type forecastType = new TypeToken<HashMap<String, WeatherForecastResponse>>(){}.getType();
+
+        String weatherJson = this.getSharedPreferences("weather", 0).getString("weather", "");
+        String forecastJson = this.getSharedPreferences("weather", 0).getString("forecast", "");
+
+        if (!weatherJson.isEmpty()) {
+            this.weatherMap = gson.fromJson(weatherJson, weatherType);
         }
-        if (forecast != null) {
-            this.weatherViewModel.setWeatherForecast(forecast);
+        if (!forecastJson.isEmpty()) {
+            this.weatherForecastMap = gson.fromJson(forecastJson, forecastType);
         }
-        if (weather == null || forecast == null
-                || weather.getFetchedAt() == null || forecast.getFetchedAt() == null) {
-            return true;
-        }
-        return weather.getFetchedAt().isBefore(LocalDateTime.now().minusMinutes(15)) || forecast.getFetchedAt().isBefore(LocalDateTime.now().minusMinutes(15));
     }
 }
 
