@@ -56,20 +56,25 @@ public class BasicWeatherFragment extends Fragment {
                     .load(WeatherApi.getIconUrl(weather.getWeather()[0].getIcon()))
                     .into(weatherIcon);
 
-            String temperatureUnit = weather.getUnit() == WeatherApi.Unit.METRIC ? "°C" : "°F";
-            String pressureUnit = weather.getUnit() == WeatherApi.Unit.METRIC ? "hPa" : "inHg";
+            String savedUnit = getActivity().getSharedPreferences("settings", 0).getString("unit", "");
+
+            String temperatureUnit = savedUnit.equals("metric") ? "°C" : "°F";
+            String pressureUnit = savedUnit.equals("metric") ? "hPa" : "inHg";
             String currentTime = Instant
                     .ofEpochSecond(weather.getDt())
                     .atZone(ZoneId.systemDefault())
                     .toLocalTime()
                     .toString();
+            String temperatureValue = WeatherApi.convertTemperature(weather.getUnit(), savedUnit, weather.getMain().getTemp());
 
             cityName.setText(weather.getName());
             coordinates.setText(weather.getCoord().getLat() + "° " + weather.getCoord().getLon() + "°");
-            temperature.setText(weather.getMain().getTemp() + temperatureUnit);
+            temperature.setText(temperatureValue + temperatureUnit);
             pressure.setText(weather.getMain().getPressure() + pressureUnit);
             description.setText(weather.getWeather()[0].getDescription());
             time.setText(currentTime);
         });
     }
+
+
 }

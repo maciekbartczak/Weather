@@ -46,7 +46,6 @@ public class ForecastFragment extends Fragment {
         this.weatherViewModel.getWeatherForecast().observe(getViewLifecycleOwner(), forecast -> {
             forecastLayout.removeAllViewsInLayout();
 
-            String tempUnit = forecast.getUnit() == WeatherApi.Unit.METRIC ? "°C" : "°F";
 
             for (int i = 0; i < forecast.getList().size(); i++) {
                 WeatherForecast forecastItem = forecast.getList().get(i);
@@ -55,8 +54,13 @@ public class ForecastFragment extends Fragment {
                 TextView temp = row.findViewById(R.id.temperature);
                 TextView description = row.findViewById(R.id.forecast_description);
 
+                String savedUnit = getActivity().getSharedPreferences("settings", 0).getString("unit", "");
+                String temperatureValue = WeatherApi.convertTemperature(forecast.getUnit(), savedUnit, forecastItem.getMain().getTemp());
+                String tempUnit = savedUnit.equals("metric") ? "°C" : "°F";
+
+
                 date.setText(forecastItem.getDt_txt().substring(0, 10) + " " + forecastItem.getDt_txt().substring(11, 16));
-                temp.setText(forecastItem.getMain().getTemp() + tempUnit);
+                temp.setText(temperatureValue + tempUnit);
                 description.setText(forecastItem.getWeather().get(0).getDescription());
 
 

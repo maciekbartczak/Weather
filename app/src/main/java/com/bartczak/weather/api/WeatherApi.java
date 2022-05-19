@@ -36,4 +36,21 @@ public class WeatherApi {
         return "https://openweathermap.org/img/wn/" + icon + "@4x.png";
     }
 
+    public static String convertTemperature(WeatherApi.Unit from, String to, String temp) {
+        if (from == WeatherApi.Unit.METRIC) {
+            if (to.equals("metric")) {
+                return temp;
+            } else if (to.equals("imperial")) {
+                return String.format("%.2f", Double.parseDouble(temp) * 1.8 + 32);
+            }
+        } else if (from == WeatherApi.Unit.IMPERIAL) {
+            if (to.equals("metric")) {
+                return String.format("%.2f", (Double.parseDouble(temp) - 32) / 1.8);
+            } else if (to.equals("imperial")) {
+                return temp;
+            }
+        }
+        return "";
+    }
+
 }
