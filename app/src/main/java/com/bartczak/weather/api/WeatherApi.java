@@ -32,4 +32,8 @@ public class WeatherApi {
                 "&units=" + unit.getValue();
     }
 
+    public static String getIconUrl(String icon) {
+        return "https://openweathermap.org/img/wn/" + icon + "@4x.png";
+    }
+
 }
