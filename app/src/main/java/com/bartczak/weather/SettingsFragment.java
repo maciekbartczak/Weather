@@ -60,6 +60,7 @@ public class SettingsFragment extends Fragment {
         cityInput.setText(currentCity);
 
 
+
         if (getActivity().getSharedPreferences("settings", 0).getString("unit", "").equals("metric")) {
             metricRadio.setChecked(true);
         } else {
@@ -117,6 +118,7 @@ public class SettingsFragment extends Fragment {
                 favoriteCities.add(city);
                 favoriteButton.setText(R.string.delete_label);
             }
+
             activity.getSharedPreferences("favorites", 0)
                     .edit()
                     .putStringSet("cities", favoriteCities)
